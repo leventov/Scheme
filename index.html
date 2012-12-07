@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function createWebSocket(path) {
+                var host = window.location.hostname;
+                if(host == '') host = 'localhost';
+                var uri = 'ws://' + host + ':9160' + path;
+
+                var Socket = window.WebSocket || window.MozWebSocket;
+                return new Socket(uri);
+            }
+
+            var resultP = $('.result').first().detach();
+            var inputP = $('.input').first().detach();
+            var commandLine = $('#command-line-input');
+            var commandLineP = $('#command-line');
+            commandLineP.hide();
+
+            var closed = false, opened = false;
+
+            function putResult(result) {
+                result.split(/\n/).forEach(function (line) {
+                    resultP.clone().text(line).insertBefore(commandLineP);
+                });
+            }
+
+            var ws = createWebSocket('/');
+
+            ws.onopen = function () {
+                opened = true;
+                commandLineP.show();
+            };
+
+            ws.onmessage = function (event) {putResult(event.data);};
+
+            function shutdown(message) {
+                commandLineP.hide();
+                putResult(opened ? message : 'Failed to connect to server :(');
+                closed = true;
+            }
+
+            ws.onerror = function () {shutdown('Connection failed.');};
+            ws.onclose = function () {shutdown('Connection closed.');};
+
+            var history = [''], hp = 1;
+
+            commandLine.keydown(function (event) {
+                var keyCode = event.keyCode;
+                if (!closed && keyCode == 13) {
+                    // enter
+                    var exprs = commandLine.val();
+                    if (exprs) {
+                        history[history.length - 1] = exprs;
+                        history.push('');
+                        inputP.clone().text('> ' + exprs).insertBefore(commandLineP);
+                        commandLine.val('');
+                        ws.send(exprs);
+                    }
+                } else if (keyCode == 38) {
+                    // up
+                    if (hp < history.length) {
+                        event.preventDefault();
+                        hp++;
+                        commandLine.val(history[history.length - hp]);
+                    }
+                } else if (keyCode == 40) {
+                    // down
+                    if (hp > 1) {
+                        event.preventDefault();
+                        hp--;
+                        commandLine.val(history[history.length - hp]);
+                    }
+                }
+            });
+
+            commandLine.keypress(function (event) {
+                var charCode = event.charCode;
+                if (charCode != 0) {
+                    history[history.length - 1] = commandLine.val() + String.fromCharCode(charCode);
+                }
+            });
+        });
+    </script>
+    <style type="text/css">
+        #console {
+            font-family: Consolas, monospace;
+        }
+        #console > p {
+            margin: 0.3em 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="console">
+        <p class="input">&gt; </p>
+        <p class="result">Connecting to server...</p>
+        <p id="command-line">
+            <label for="command-line-input">&gt;</label>
+            <input type="text" id="command-line-input" size="100">
+        </p>
+    </div>
+</body>
+</html>
