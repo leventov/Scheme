@@ -1,1 +1,0 @@
-interpreter: ./server $PORT
