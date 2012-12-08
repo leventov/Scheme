@@ -72,7 +72,7 @@ envLookup = \k -> do
     (env, _, _) <- getEnv
     let envStr = "(" ++ (intercalate " " $ M.keys env) ++ ")"
         failWithMsg = throwError $
-            EvalError $ printf "No function bound to the name \
+            EvalError $ printf "No function bound to name \
                             \%s, current env:\n%s" k envStr
     maybe failWithMsg return $ M.lookup k env
 
