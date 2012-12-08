@@ -1,1 +1,1 @@
-interpreter: ./server +RTS
+interpreter: ./server $PORT
