@@ -1,6 +1,6 @@
-import Racket.Interpreter
-import Racket.Parser (parseExprs)
-import Racket.Core (newEnv)
+import Scheme.Interpreter
+import Scheme.Parser (parseExprs)
+import Scheme.Core (newEnv)
 import Network.WebSockets as WS
 import Data.Text (Text, pack, unpack)
 import Control.Monad (forever)
