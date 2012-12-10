@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Try Racket</title>
+    <title>Try Scheme</title>
     <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
@@ -17,14 +17,13 @@
             var resultP = $('.result').first().detach();
             var inputP = $('.input').first().detach();
             var commandLine = $('#command-line-input');
-            var commandLineP = $('#command-line');
-            commandLineP.hide();
+            var clForm = $('#command-line').hide();
 
             var closed = false, opened = false;
 
             function putResult(result) {
                 result.split(/\n/).forEach(function (line) {
-                    resultP.clone().text(line).insertBefore(commandLineP);
+                    resultP.clone().text(line).insertBefore(clForm);
                 });
             }
 
@@ -32,15 +31,19 @@
 
             ws.onopen = function () {
                 opened = true;
-                commandLineP.show();
+                clForm.show();
             };
 
-            ws.onmessage = function (event) {putResult(event.data);};
+            ws.onmessage = function (event) {
+                putResult(event.data);
+            };
 
             function shutdown(message) {
-                commandLineP.hide();
-                putResult(opened ? message : 'Failed to connect to server :(');
-                closed = true;
+                if (!closed) {
+                    clForm.hide();
+                    putResult(opened ? message : 'Failed to connect to the server :(');
+                    closed = true;
+                }
             }
 
             ws.onerror = function () {shutdown('Connection failed.');};
@@ -48,26 +51,29 @@
 
             var history = [''], hp = 1;
 
-            commandLine.keydown(function (event) {
-                var keyCode = event.keyCode;
-                if (!closed && keyCode == 13) {
-                    // enter
+            clForm.submit(function (event) {
+                event.preventDefault();
+                if (!closed) {
                     var exprs = commandLine.val();
                     if (exprs) {
                         history[history.length - 1] = exprs;
                         history.push('');
-                        inputP.clone().text('> ' + exprs).insertBefore(commandLineP);
+                        inputP.clone().text('> ' + exprs).insertBefore(clForm);
                         commandLine.val('');
                         ws.send(exprs);
                     }
-                } else if (keyCode == 38) {
+                }
+            });
+
+            commandLine.keydown(function (event) {
+                if (event.keyCode == 38) {
                     // up
                     if (hp < history.length) {
                         event.preventDefault();
                         hp++;
                         commandLine.val(history[history.length - hp]);
                     }
-                } else if (keyCode == 40) {
+                } else if (event.keyCode == 40) {
                     // down
                     if (hp > 1) {
                         event.preventDefault();
@@ -95,13 +101,15 @@
     </style>
 </head>
 <body>
+    <a href="///github.com/leventov/Scheme">Source on Github</a>
     <div id="console">
-        <p class="input">&gt; </p>
+        <p class="input"></p>
         <p class="result">Connecting to server...</p>
-        <p id="command-line">
+        <form id="command-line">
             <label for="command-line-input">&gt;</label>
             <input type="text" id="command-line-input" size="100">
-        </p>
+        </form>
     </div>
+
 </body>
 </html>

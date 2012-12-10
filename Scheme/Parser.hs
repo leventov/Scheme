@@ -1,6 +1,6 @@
-module Racket.Parser (parseExprs) where
+module Scheme.Parser (parseExprs) where
 
-import Racket.Core
+import Scheme.Core
 
 import Control.Applicative ((<$>), (<*), liftA2)
 import Text.ParserCombinators.Parsec hiding (Parser)
@@ -11,7 +11,7 @@ type Parser t = CharParser () t
 identifierLetter :: Parser Char
 identifierLetter = noneOf "()[]{}\",'`;#|\\ \n1234567890"
 
-racketLanguage = P.LanguageDef
+schemeLanguage = P.LanguageDef
     { P.commentStart = "/*"
     , P.commentEnd = "*/"
     , P.commentLine = "//"
@@ -25,7 +25,7 @@ racketLanguage = P.LanguageDef
     , P.caseSensitive = True
     }
 
-lexer = P.makeTokenParser racketLanguage
+lexer = P.makeTokenParser schemeLanguage
 
 whiteSpace = P.whiteSpace lexer
 

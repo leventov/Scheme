@@ -1,4 +1,4 @@
-module Racket.Core where
+module Scheme.Core where
 
 import Control.Applicative ((<$>))
 import Data.List (intercalate)

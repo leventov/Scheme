@@ -1,6 +1,6 @@
-module Racket.Library where
+module Scheme.Library where
 
-import Racket.Core
+import Scheme.Core
 
 import Control.Applicative ((<$>))
 import Data.List (intercalate)

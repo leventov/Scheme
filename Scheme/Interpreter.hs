@@ -1,8 +1,8 @@
-module Racket.Interpreter (greeting, builtins, runExprs) where
+module Scheme.Interpreter (greeting, builtins, runExprs) where
 
-import Racket.Parser
-import Racket.Core
-import Racket.Library
+import Scheme.Parser
+import Scheme.Core
+import Scheme.Library
 
 import Control.Applicative ((<$>))
 import Data.List (intercalate)
@@ -61,7 +61,7 @@ runExprs env es =
 mainLoop :: Env -> [Expr] -> String
 mainLoop e es = fst $ runExprs e es
 
-greeting = "Racket interpreter. Type `(env)` to print available functions."
+greeting = "Scheme interpreter. Type `(env)` to print available functions."
 
 defaultStackLimit = 2^20
 

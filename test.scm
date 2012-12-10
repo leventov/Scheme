@@ -1,5 +1,5 @@
 /*
-    usage: runhaskell Racket/Interpreter.hs < test.rkt
+    usage: runhaskell Scheme/Interpreter.hs < test.rkt
 */
 (env)
 (list 1 2 3)
